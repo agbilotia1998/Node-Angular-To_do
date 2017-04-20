@@ -56,11 +56,7 @@ app.post("/registered", function (req, res) {
     var details = {
         username: req.body.username,
         email: req.body.email,
-        confirmation: "0",
-        todos: [{
-            task: "ok i am done",
-            accomplished: "false"
-        }]
+        confirmation: "0"
     };
     User.register(new User(details),
         req.body.password, function (err, user) {
@@ -71,6 +67,37 @@ app.post("/registered", function (req, res) {
             User.findOne({email: details.email}, function (err, found) {
                 if (!found) {
                     passport.authenticate("local")(req, res, function () {
+                        var request = sg.emptyRequest({
+                            method: 'POST',
+                            path: '/v3/mail/send',
+                            body: {
+                                personalizations: [
+                                    {
+                                        to: [
+                                            {
+                                                email: details.email
+                                            }
+                                        ],
+                                        subject: 'Registered ✔'
+                                    }
+                                ],
+                                from: {
+                                    name: 'To_do app',
+                                    email: '<iec2016039@iiita.ac.in>'
+                                },
+                                content: [
+                                    {
+                                        type: 'text/html',
+                                        value: '<html><body>' +
+                                        '<b> Thanks for registering<br><br></b>' +
+                                        "<a href='http:///localhost:5000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
+                                        '</body></html>'
+                                    }
+                                ]
+                            }
+                        });
+
+
                         res.render("registered.ejs", {username: details.username});
                     });
                 }
@@ -120,7 +147,6 @@ app.post("/login", function (req, res) {
                         req.session.username = user;
                         res.send('entered');
                     }
-
                     else if (err)
                         res.redirect('/');
                 });
@@ -187,7 +213,7 @@ app.post('/:user/todos', function (req, res) {
 });
 
 
-app.get('/:user/delete/:todo_id', function (req, res) {
+app.get('/:user/update/:todo_id', function (req, res) {
     var user = req.params.user;
     var todo_id = req.params.todo_id;
     User.find({username: user}, function (err, result) {
@@ -195,9 +221,7 @@ app.get('/:user/delete/:todo_id', function (req, res) {
                 console.log(err);
 
             else {
-                //console.log(result[0]);
-
-                User.update({username:user}, {$pull: {"todos":{_id:todo_id}}}, function (err, updated) {
+                User.update({"todos._id": todo_id},{$set:{"todos.$.accomplished":true}}, function (err, toUpdate) {
                     if (err)
                         console.log(err);
                     else
@@ -209,12 +233,63 @@ app.get('/:user/delete/:todo_id', function (req, res) {
             if (err)
                 res.send(err);
         });
-    User.findOne({username: user}, function (err, todos) {
+
+    User.find({username: user}, function (err, result) {
         if (err)
             res.send(err);
 
-        else
-            res.json(todos.task);
+        else {
+            //console.log(result[0].todos[0]);
+            var dataObj = [];
+            for (var i = 0; i < result[0].todos.length; i++) {
+                //console.log(result[0].todos[i]);
+                dataObj.push(result[0].todos[i].task);
+            }
+            //console.log();
+            res.json(dataObj);
+        }
+    });
+});
+
+
+
+app.get('/:user/delete/:todo_id', function (req, res) {
+    var user = req.params.user;
+    var todo_id = req.params.todo_id;
+    User.find({username: user}, function (err, result) {
+            if (err)
+                console.log(err);
+
+            else {
+                //console.log(result[0]);
+
+                User.update({username: user}, {$pull: {"todos": {_id: todo_id}}}, function (err, updated) {
+                    if (err)
+                        console.log(err);
+                    else
+                        console.log(result[0]);
+                });
+            }
+        }
+        , function (err, todo) {
+            if (err)
+                res.send(err);
+        });
+
+    User.find({username: user}, function (err, result) {
+        if (err)
+            res.send(err);
+
+        else {
+            //console.log(result[0].todos[0]);
+            var dataObj = [];
+            for (var i = 0; i < result[0].todos.length; i++) {
+                //console.log(result[0].todos[i]);
+                dataObj.push(result[0].todos[i].task);
+            }
+            //console.log();
+            res.json(dataObj);
+        }
     });
 });
 
