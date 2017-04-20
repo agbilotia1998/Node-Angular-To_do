@@ -14,7 +14,7 @@ var express = require('express'),
     User = require("./models/user.js"),
     path = require('path'),
     app = express();
-    auth = require('passport-local-authenticate');
+auth = require('passport-local-authenticate');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(database.localUrl);
@@ -56,7 +56,11 @@ app.post("/registered", function (req, res) {
     var details = {
         username: req.body.username,
         email: req.body.email,
-        confirmation: "0"
+        confirmation: "0",
+        todos: [{
+            task: "ok i am done",
+            accomplished: "false"
+        }]
     };
     User.register(new User(details),
         req.body.password, function (err, user) {
@@ -129,33 +133,53 @@ app.post("/login", function (req, res) {
 app.get('/:user/todos', function (req, res) {
 
     var user = req.params.user;
-    User.find({username: user}, function (err, todos) {
+    User.find({username: user}, function (err, result) {
         if (err)
             res.send(err);
 
-        else
-            res.json(todos.task);
+        else {
+            //console.log(result[0].todos[0]);
+            var dataObj = [];
+            for (var i = 0; i < result[0].todos.length; i++) {
+                //console.log(result[0].todos[i]);
+                dataObj.push(result[0].todos[i].task);
+            }
+            //console.log();
+            res.json(dataObj);
+        }
     });
 });
 
 
 app.post('/:user/todos', function (req, res) {
     var user = req.params.user;
-    var text = req.params.text;
-    User.findOne({username: user}, function (err, found) {
+    var text = req.body.text;
+    User.find({username: user}, function (err, found) {
         User.update({username: user}, {
-            $push: {Task: text},
-            $set: {Accomplished: false}
+            $push: {
+                todos: {
+                    task: text,
+                    accomplished: false
+                }
+            }
         }, function (err, updated) {
             if (err)
                 console.log(err);
             else {
-                User.find({username: user}, function (err, todos) {
+                User.find({username: user}, function (err, result) {
                     if (err)
                         res.send(err);
 
-                    else
-                        res.json(todos.task);
+                    else {
+                        //console.log(result[0].todos[0]);
+                        var dataObj = [];
+                        for (var i = 0; i < result[0].todos.length; i++) {
+                            //console.log(result[0].todos[i]);
+                            dataObj.push(result[0].todos[i].task);
+                        }
+                        //console.log();
+                        res.json(dataObj);
+                    }
                 });
             }
         })
@@ -163,17 +187,29 @@ app.post('/:user/todos', function (req, res) {
 });
 
 
-app.delete('/:user/delete/:todo_id', function (req, res) {
+app.get('/:user/delete/:todo_id', function (req, res) {
     var user = req.params.user;
-    User.update({username: user}, {$unset: {task: ""}}, function (err, removed) {
+    var todo_id = req.params.todo_id;
+    User.find({username: user}, function (err, result) {
             if (err)
                 console.log(err);
+
+            else {
+                //console.log(result[0]);
+
+                User.update({username:user}, {$pull: {"todos":{_id:todo_id}}}, function (err, updated) {
+                    if (err)
+                        console.log(err);
+                    else
+                        console.log(result[0]);
+                });
+            }
         }
         , function (err, todo) {
             if (err)
                 res.send(err);
         });
-    User.find({username: user}, function (err, todos) {
+    User.findOne({username: user}, function (err, todos) {
         if (err)
             res.send(err);
 
