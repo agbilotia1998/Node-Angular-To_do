@@ -12,9 +12,10 @@ var express = require('express'),
     Schema = mongoose.Schema,
     database = require("./config/mongo_db"),
     User = require("./models/user.js"),
+    sg = require('sendgrid')(process.env.SENDGRID_API_KEY),
     path = require('path'),
     app = express();
-auth = require('passport-local-authenticate');
+    auth = require('passport-local-authenticate');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(database.localUrl);
@@ -46,68 +47,74 @@ passport.deserializeUser(function (User, err) {
     User.deserialiseUser()
 });
 
-
-app.get('/', function (req, res) {
-    res.render('index.ejs');
-});
-
-
 app.post("/registered", function (req, res) {
+    //console.log("done");
     var details = {
         username: req.body.username,
         email: req.body.email,
+        password:req.body.password,
         confirmation: "0"
     };
-    User.register(new User(details),
-        req.body.password, function (err, user) {
-            if (err) {
-                console.log(err);
-                return res.render('create.ejs', {b: "1"});
-            }
+
+    User.findOne({username: details.username}, function (err,found) {
+        if (!found) {
             User.findOne({email: details.email}, function (err, found) {
                 if (!found) {
-                    passport.authenticate("local")(req, res, function () {
-                        var request = sg.emptyRequest({
-                            method: 'POST',
-                            path: '/v3/mail/send',
-                            body: {
-                                personalizations: [
-                                    {
-                                        to: [
-                                            {
-                                                email: details.email
-                                            }
-                                        ],
-                                        subject: 'Registered ✔'
-                                    }
-                                ],
-                                from: {
-                                    name: 'To_do app',
-                                    email: '<iec2016039@iiita.ac.in>'
-                                },
-                                content: [
-                                    {
-                                        type: 'text/html',
-                                        value: '<html><body>' +
-                                        '<b> Thanks for registering<br><br></b>' +
-                                        "<a href='http:///localhost:5000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
-                                        '</body></html>'
-                                    }
-                                ]
-                            }
-                        });
+                    var request = sg.emptyRequest({
+                        method: 'POST',
+                        path: '/v3/mail/send',
+                        body: {
+                            personalizations: [
+                                {
+                                    to: [
+                                        {
+                                            email: details.email
+                                        }
+                                    ],
+                                    subject: 'Registered ✔'
+                                }
+                            ],
+                            from: {
+                                name: 'Banke Bihari Fashions',
+                                email: 'To do app <iec2016039@iiita.ac.in>'
+                            },
+                            content: [
+                                {
+                                    type: 'text/html',
+                                    value: '<html><body>' +
+                                    '<b> Thanks for registering <br><br></b>' +
+                                    "<a href='http:///localhost:3000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
+                                     +// html body
+                                    '</body></html>'
+                                }
+                            ]
+                        }
+                    });
 
-
-                        res.render("registered.ejs", {username: details.username});
+                    sg.API(request, function (error, response) {
+                        if (error) {
+                            console.log('Error response received');
+                        }
+                        else {
+                            User.create(details);
+                            res.sendfile('index.html', {name: details.name});
+                        }
+                        console.log(response.statusCode);
+                        console.log(response.body);
+                        console.log(response.headers);
                     });
                 }
                 else {
-                    console.log(err);
-                    return res.render('create.ejs', {b: "0"});
+                    res.sendfile('index.html', {b: "0"});
                 }
-            });
-        });
+            })
+        }
+        else {
+            res.sendfile('index.html', {b: "1"});
+        }
+    });
 });
+
 
 
 app.get("/confirmation/username/:un", function (req, res) {
@@ -132,32 +139,23 @@ app.get("/confirmation/username/:un", function (req, res) {
 });
 
 app.post("/login", function (req, res) {
+    //console.log("Invalid username or password");
     var user = req.body.username;
     var pass = req.body.password;
-    User.findOne({username: user, confirmation: "1"}, function (err, approved) {
+    User.findOne({username: user, password: pass, confirmation: "1"}, function (err, approved) {
         if (!approved) {
-            res.redirect("/");
-            // alert("Invalid username or password");
+            res.sendfile("index.html", {a: "1"});
+             console.log("Invalid username or password");
         }
         else {
-            auth.hash(pass, function (err, hashed) {
-                console.log(hashed);
-                auth.verify(pass, hashed, function (err, verified) {
-                    if (verified) {
-                        req.session.username = user;
-                        res.send('entered');
-                    }
-                    else if (err)
-                        res.redirect('/');
-                });
-            });
+            req.session.username = user;
+            res.sendfile("index.html", {name: approved.name, username: approved.username});
         }
     })
 });
 
 
 app.get('/:user/todos', function (req, res) {
-
     var user = req.params.user;
     User.find({username: user}, function (err, result) {
         if (err)
@@ -171,7 +169,7 @@ app.get('/:user/todos', function (req, res) {
                 dataObj.push(result[0].todos[i].task);
             }
             //console.log();
-            res.json(dataObj);
+            res.json(result[0].todos);
         }
     });
 });
@@ -204,7 +202,7 @@ app.post('/:user/todos', function (req, res) {
                             dataObj.push(result[0].todos[i].task);
                         }
                         //console.log();
-                        res.json(dataObj);
+                        res.json(result[0].todos);
                     }
                 });
             }
@@ -221,7 +219,7 @@ app.get('/:user/update/:todo_id', function (req, res) {
                 console.log(err);
 
             else {
-                User.update({"todos._id": todo_id},{$set:{"todos.$.accomplished":true}}, function (err, toUpdate) {
+                User.update({"todos._id": todo_id}, {$set: {"todos.$.accomplished": true}}, function (err, toUpdate) {
                     if (err)
                         console.log(err);
                     else
@@ -246,11 +244,10 @@ app.get('/:user/update/:todo_id', function (req, res) {
                 dataObj.push(result[0].todos[i].task);
             }
             //console.log();
-            res.json(dataObj);
+            res.json(result[0].todos);
         }
     });
 });
-
 
 
 app.get('/:user/delete/:todo_id', function (req, res) {
@@ -288,9 +285,13 @@ app.get('/:user/delete/:todo_id', function (req, res) {
                 dataObj.push(result[0].todos[i].task);
             }
             //console.log();
-            res.json(dataObj);
+            res.json(result[0].todos);
         }
     });
+});
+
+app.get('*', function(req, res) {
+    res.sendfile('index.html');
 });
 
 
