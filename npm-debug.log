@@ -1,0 +1,65 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'install',
+1 verbose cli   'method-override',
+1 verbose cli   '--save' ]
+2 info using npm@3.10.8
+3 info using node@v6.9.1
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly fetchPackageMetaData method-override
+8 silly fetchNamedPackageData method-override
+9 silly mapToRegistry name method-override
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry http://registry.npmjs.org/
+12 silly mapToRegistry data Result {
+12 silly mapToRegistry   raw: 'method-override',
+12 silly mapToRegistry   scope: null,
+12 silly mapToRegistry   escapedName: 'method-override',
+12 silly mapToRegistry   name: 'method-override',
+12 silly mapToRegistry   rawSpec: '',
+12 silly mapToRegistry   spec: 'latest',
+12 silly mapToRegistry   type: 'tag' }
+13 silly mapToRegistry uri http://registry.npmjs.org/method-override
+14 verbose request uri http://registry.npmjs.org/method-override
+15 verbose request no auth needed
+16 info attempt registry request try #1 at 12:08:57 AM
+17 verbose request id aa9a88bfbb2792d9
+18 http request GET http://registry.npmjs.org/method-override
+19 info retry will retry, error on last attempt: Error: read ECONNRESET
+20 info attempt registry request try #2 at 12:09:49 AM
+21 http request GET http://registry.npmjs.org/method-override
+22 info retry will retry, error on last attempt: Error: read ECONNRESET
+23 info attempt registry request try #3 at 12:11:32 AM
+24 http request GET http://registry.npmjs.org/method-override
+25 silly fetchPackageMetaData Error: read ECONNRESET
+25 silly fetchPackageMetaData     at exports._errnoException (util.js:1026:11)
+25 silly fetchPackageMetaData     at TCP.onread (net.js:569:26)
+25 silly fetchPackageMetaData  error for method-override { Error: read ECONNRESET
+25 silly fetchPackageMetaData     at exports._errnoException (util.js:1026:11)
+25 silly fetchPackageMetaData     at TCP.onread (net.js:569:26) code: 'ECONNRESET', errno: 'ECONNRESET', syscall: 'read' }
+26 silly rollbackFailedOptional Starting
+27 silly rollbackFailedOptional Finishing
+28 silly runTopLevelLifecycles Finishing
+29 silly install printInstalled
+30 verbose stack Error: read ECONNRESET
+30 verbose stack     at exports._errnoException (util.js:1026:11)
+30 verbose stack     at TCP.onread (net.js:569:26)
+31 verbose cwd C:\Users\AYUSH\WebstormProjects\TOdo
+32 error Windows_NT 6.2.9200
+33 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install" "method-override" "--save"
+34 error node v6.9.1
+35 error npm  v3.10.8
+36 error code ECONNRESET
+37 error errno ECONNRESET
+38 error syscall read
+39 error network read ECONNRESET
+40 error network This is most likely not a problem with npm itself
+40 error network and is related to network connectivity.
+40 error network In most cases you are behind a proxy or have bad network settings.
+40 error network
+40 error network If you are behind a proxy, please make sure that the
+40 error network 'proxy' config is set properly.  See: 'npm help config'
+41 verbose exit [ 1, true ]

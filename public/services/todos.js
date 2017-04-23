@@ -16,8 +16,5 @@ angular.module('todoService', [])
             get: function (user, id) {
                 return $http.get(user + '/delete/' + id);
             },
-            post: function () {
-                return $http.post('/login');
-            }
         }
     }]);

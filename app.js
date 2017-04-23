@@ -75,7 +75,7 @@ app.post("/registered", function (req, res) {
                                 }
                             ],
                             from: {
-                                name: 'Banke Bihari Fashions',
+                                name: 'To-doers',
                                 email: 'To do app <iec2016039@iiita.ac.in>'
                             },
                             content: [
@@ -83,8 +83,8 @@ app.post("/registered", function (req, res) {
                                     type: 'text/html',
                                     value: '<html><body>' +
                                     '<b> Thanks for registering <br><br></b>' +
-                                    "<a href='http:///localhost:3000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
-                                     +// html body
+                                    "<a href='http:///localhost:5000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
+                                     +
                                     '</body></html>'
                                 }
                             ]
@@ -105,12 +105,12 @@ app.post("/registered", function (req, res) {
                     });
                 }
                 else {
-                    res.sendfile('index.html');
+                    res.send('Email already exists');
                 }
             })
         }
         else {
-            res.sendfile('index.html');
+            res.sendfile('Username already exists');
         }
     });
 });
@@ -130,7 +130,7 @@ app.get("/confirmation/username/:un", function (req, res) {
                     console.log('No document found with defined "find" criteria!');
                 }
             });
-            res.redirect("/login");
+            res.redirect("/");
         }
         else {
             res.send("USER NOT REGISTERED");
@@ -142,131 +142,178 @@ app.post("/login", function (req, res) {
     //console.log("Invalid username or password");
     var user = req.body.username;
     var pass = req.body.password;
-    console.log(pass);
+    //console.log(pass);
     User.findOne({username: user, password: pass, confirmation: "1"}, function (err, approved) {
         if (!approved) {
              console.log("Invalid username or password");
+             res.send("Invalid username or password");
         }
         else {
             req.session.username = user;
-            console.log("ok");
-            res.json({user:user});
-            //res.redirect('/');
+            //console.log("ok");
+            //res.json({user:user});
+            res.sendfile('user.html');
         }
     })
 });
 
 
-app.get('/:user/todos', function (req, res) {
-    var user = req.params.user;
-    User.find({username: user}, function (err, result) {
-        if (err)
-            res.send(err);
+app.get("/login", function (req, res) {
+    //console.log("Invalid username or password");
+    if(req.session.username) {
+        var user = req.session.username;
+        res.json({user: user});
+    }
+    else{
+        res.redirect("/");
+    }
+});
 
-        else {
-            res.json(result[0].todos);
-        }
-    });
+app.get('/:user/todos', function (req, res) {
+    if(req.session.username) {
+        var user = req.params.user;
+        User.find({username: user}, function (err, result) {
+            if (err)
+                res.send(err);
+
+            else {
+                res.json(result[0].todos);
+            }
+        });
+    }
+
+    else
+    {
+        res.redirect('/');
+    }
+
 });
 
 
 app.post('/:user/todos', function (req, res) {
-    var user = req.params.user;
-    var text = req.body.text;
-    User.find({username: user}, function (err, found) {
-        User.update({username: user}, {
-            $push: {
-                todos: {
-                    task: text,
-                    accomplished: false
-                }
-            }
-        }, function (err, updated) {
-            if (err)
-                console.log(err);
-            else {
-                User.find({username: user}, function (err, result) {
-                    if (err)
-                        res.send(err);
-
-                    else {
-                        res.json(result[0].todos);
+    if(req.session.username) {
+        var user = req.params.user;
+        var text = req.body.text;
+        User.find({username: user}, function (err, found) {
+            User.update({username: user}, {
+                $push: {
+                    todos: {
+                        task: text,
+                        accomplished: false
                     }
-                });
-            }
-        })
-    });
+                }
+            }, function (err, updated) {
+                if (err)
+                    console.log(err);
+                else {
+                    User.find({username: user}, function (err, result) {
+                        if (err)
+                            res.send(err);
+
+                        else {
+                            res.json(result[0].todos);
+                        }
+                    });
+                }
+            })
+        });
+    }
+
+    else
+    {
+        res.redirect("/");
+    }
 });
 
 
 app.get('/:user/update/:todo_id', function (req, res) {
-    var user = req.params.user;
-    var todo_id = req.params.todo_id;
-    User.find({username: user}, function (err, result) {
-            if (err)
-                console.log(err);
+    if(req.session.username) {
+        var user = req.params.user;
+        var todo_id = req.params.todo_id;
+        User.find({username: user}, function (err, result) {
+                if (err)
+                    console.log(err);
 
-            else {
-                User.update({"todos._id": todo_id}, {$set: {"todos.$.accomplished": true}}, function (err, toUpdate) {
-                    if (err)
-                        console.log(err);
-                    else
-                        console.log(result[0]);
-                });
+                else {
+                    User.update({"todos._id": todo_id}, {$set: {"todos.$.accomplished": true}}, function (err, toUpdate) {
+                        if (err)
+                            console.log(err);
+                        else
+                            console.log(result[0]);
+                    });
+                }
             }
-        }
-        , function (err, todo) {
+            , function (err, todo) {
+                if (err)
+                    res.send(err);
+            });
+
+        User.find({username: user}, function (err, result) {
             if (err)
                 res.send(err);
+
+            else {
+                res.json(result[0].todos);
+            }
         });
+    }
 
-    User.find({username: user}, function (err, result) {
-        if (err)
-            res.send(err);
-
-        else {
-            res.json(result[0].todos);
-        }
-    });
+    else
+    {
+        res.redirect("/");
+    }
 });
 
 
 app.get('/:user/delete/:todo_id', function (req, res) {
-    var user = req.params.user;
-    var todo_id = req.params.todo_id;
-    User.find({username: user}, function (err, result) {
-            if (err)
-                console.log(err);
+    if(req.session.username) {
+        var user = req.params.user;
+        var todo_id = req.params.todo_id;
+        User.find({username: user}, function (err, result) {
+                if (err)
+                    console.log(err);
 
-            else {
-                //console.log(result[0]);
+                else {
+                    //console.log(result[0]);
 
-                User.update({username: user}, {$pull: {"todos": {_id: todo_id}}}, function (err, updated) {
-                    if (err)
-                        console.log(err);
-                    else
-                        console.log(result[0]);
-                });
+                    User.update({username: user}, {$pull: {"todos": {_id: todo_id}}}, function (err, updated) {
+                        if (err)
+                            console.log(err);
+                        else
+                            console.log(result[0]);
+                    });
+                }
             }
-        }
-        , function (err, todo) {
+            , function (err, todo) {
+                if (err)
+                    res.send(err);
+            });
+
+        User.find({username: user}, function (err, result) {
             if (err)
                 res.send(err);
+
+            else {
+                //console.log();
+                res.json(result[0].todos);
+            }
         });
-
-    User.find({username: user}, function (err, result) {
-        if (err)
-            res.send(err);
-
-        else {
-            //console.log();
-            res.json(result[0].todos);
-        }
-    });
+    }
+    else
+    {
+        re.redirect("/");
+    }
 });
 
-app.get('*', function(req, res) {
+app.get('/', function(req, res) {
     res.sendfile('index.html');
+});
+
+
+app.get("/logout", function (req, res) {
+    req.logout();
+    req.session.username = false;
+    res.redirect("/");
 });
 
 
