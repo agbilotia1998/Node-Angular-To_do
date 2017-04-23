@@ -10,11 +10,20 @@
     <title>To do App</title>
 
     <!-- SCROLLS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <!-- load bootstrap -->
     <style>
-        html                    { overflow-y:scroll; }
-        body                    { padding-top:50px; }
-        #todo-list              { margin-bottom:30px; }
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            padding-top: 50px;
+        }
+
+        #todo-list {
+            margin-bottom: 30px;
+        }
     </style>
 
     <!-- SPELLS -->
@@ -30,14 +39,16 @@
 
     <!-- Large modal -->
     <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-        Login modal</button>
+        Login modal
+    </button>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
          aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        ×</button>
+                        ×
+                    </button>
                     <h4 class="modal-title" id="myModalLabel">
                         Login/Registration </h4>
                 </div>
@@ -52,27 +63,33 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div class="tab-pane active" id="Login" style="padding-bottom: 20px">
-                                    <form  class="form-horizontal">
+                                    <form class="form-horizontal">
                                         <div class="form-group">
                                             <label for="username" class="col-sm-2 control-label">
                                                 Username</label>
                                             <div class="col-sm-10">
-                                                <input type="text" class="form-control" id="username" placeholder="Username" name="username" ng-model="formData.username" />
+                                                <input type="text" class="form-control" id="username"
+                                                       placeholder="Username" name="username"
+                                                       ng-model="formData.username"/>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputPassword1" class="col-sm-2 control-label">
                                                 Password</label>
                                             <div class="col-sm-10">
-                                                <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="password" ng-model="formData.password" />
+                                                <input type="password" class="form-control" id="exampleInputPassword1"
+                                                       name="password" placeholder="password"
+                                                       ng-model="formData.password"/>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-2">
-                                            <div class="col-sm-10">
-                                                <button type="submit" class="btn btn-primary btn-sm"  formmethod="post" formaction="/login" >
-                                                    Submit</button>
-                                            </div>
+                                                <div class="col-sm-10">
+                                                    <button type="submit" class="btn btn-primary btn-sm"
+                                                            formmethod="post" formaction="/login">
+                                                        Submit
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -85,7 +102,8 @@
                                             <div class="col-sm-10">
                                                 <div class="row">
                                                     <div class="col-md-9">
-                                                        <input type="text" class="form-control" placeholder="Username" name="username" />
+                                                        <input type="text" class="form-control" placeholder="Username"
+                                                               name="username"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -94,7 +112,8 @@
                                             <label for="email" class="col-sm-2 control-label">
                                                 Email</label>
                                             <div class="col-sm-10">
-                                                <input type="email" class="form-control" id="email" placeholder="Email" name="email" />
+                                                <input type="email" class="form-control" id="email" placeholder="Email"
+                                                       name="email"/>
                                             </div>
                                         </div>
 
@@ -102,17 +121,21 @@
                                             <label for="password" class="col-sm-2 control-label">
                                                 Password</label>
                                             <div class="col-sm-10">
-                                                <input type="password" class="form-control" id="password" placeholder="Password" name="password" />
+                                                <input type="password" class="form-control" id="password"
+                                                       placeholder="Password" name="password"/>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-sm-2">
                                             </div>
                                             <div class="col-sm-10">
-                                                <button type="submit" class="btn btn-primary btn-sm" formmethod="post" formaction="/registered">
-                                                    Register</button>
+                                                <button type="submit" class="btn btn-primary btn-sm" formmethod="post"
+                                                        formaction="/registered">
+                                                    Register
+                                                </button>
                                                 <button type="button" class="btn btn-default btn-sm">
-                                                    Cancel</button>
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </div>
                                     </form>
@@ -135,9 +158,10 @@
     <div id="todo-form" class="row">
         <div class="col-sm-8 col-sm-offset-2 text-center">
 
-                    <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever">
-                </div>
-            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" >Add</button>
+            <input type="text" class="form-control input-lg text-center"
+                   placeholder="I want to buy a puppy that will love me forever">
+        </div>
+        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">Add</button>
 
     </div>
 

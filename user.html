@@ -10,11 +10,20 @@
     <title>To do App</title>
 
     <!-- SCROLLS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <!-- load bootstrap -->
     <style>
-        html                    { overflow-y:scroll; }
-        body                    { padding-top:50px; }
-        #todo-list              { margin-bottom:30px; }
+        html {
+            overflow-y: scroll;
+        }
+
+        body {
+            padding-top: 50px;
+        }
+
+        #todo-list {
+            margin-bottom: 30px;
+        }
     </style>
 
     <!-- SPELLS -->
@@ -29,8 +38,8 @@
 <body ng-controller="mainController">
 <div class="container">
 
-    <form method="get"action="/logout">
-    <input type="submit" class="btn btn-primary btn-lg" value="Logout {{data.user}}"> </input>
+    <form method="get" action="/logout">
+        <input type="submit" class="btn btn-primary btn-lg" value="Logout {{data.user}}"> </input>
     </form>
     <!-- HEADER AND TODO COUNT -->
     <div class="jumbotron text-center">
@@ -45,7 +54,9 @@
 
             <div class="checkbox" ng-repeat="todo in todos">
                 <label>
-                    <input type="checkbox" ng-click="updateTodo(data.user,todo._id)" autocomplete="off"> Accomplished:{{todo.accomplished}} <button class="btn btn-primary ">{{ todo.task }}</button>
+                    <input type="checkbox" ng-click="updateTodo(data.user,todo._id)" autocomplete="off">
+                    Accomplished:{{todo.accomplished}}
+                    <button class="btn btn-primary ">{{ todo.task }}</button>
                     <input type="button" ng-click="deleteTodo(data.user,todo._id)" value="Delete" id="todo._id">
                 </label>
             </div>
@@ -60,7 +71,8 @@
                 <div class="form-group">
                     <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
 
-                    <input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
+                    <input type="text" class="form-control input-lg text-center"
+                           placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
 
                 </div>
                 <!-- createToDo() WILL CREATE NEW TODOS -->

@@ -15,7 +15,7 @@ var express = require('express'),
     sg = require('sendgrid')(process.env.SENDGRID_API_KEY),
     path = require('path'),
     app = express();
-    auth = require('passport-local-authenticate');
+auth = require('passport-local-authenticate');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(database.localUrl);
@@ -52,11 +52,11 @@ app.post("/registered", function (req, res) {
     var details = {
         username: req.body.username,
         email: req.body.email,
-        password:req.body.password,
+        password: req.body.password,
         confirmation: "0"
     };
 
-    User.findOne({username: details.username}, function (err,found) {
+    User.findOne({username: details.username}, function (err, found) {
         if (!found) {
             User.findOne({email: details.email}, function (err, found) {
                 if (!found) {
@@ -83,9 +83,8 @@ app.post("/registered", function (req, res) {
                                     type: 'text/html',
                                     value: '<html><body>' +
                                     '<b> Thanks for registering <br><br></b>' +
-                                    "<a href='http:///localhost:5000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" +
-                                     +
-                                    '</body></html>'
+                                    "<a href='http:///localhost:5000/confirmation/username/" + details.username + "' target='_blank'> 'Click on the link to activate your account'</a><br>" + +
+                                        '</body></html>'
                                 }
                             ]
                         }
@@ -97,7 +96,7 @@ app.post("/registered", function (req, res) {
                         }
                         else {
                             User.create(details);
-                            res.sendfile('index.html', {name: details.name});
+                            res.send("Thanks for registering a confirmation email has been sent to your registered email-id kindly verify your account to enjoy the services");
                         }
                         console.log(response.statusCode);
                         console.log(response.body);
@@ -114,7 +113,6 @@ app.post("/registered", function (req, res) {
         }
     });
 });
-
 
 
 app.get("/confirmation/username/:un", function (req, res) {
@@ -145,8 +143,8 @@ app.post("/login", function (req, res) {
     //console.log(pass);
     User.findOne({username: user, password: pass, confirmation: "1"}, function (err, approved) {
         if (!approved) {
-             console.log("Invalid username or password");
-             res.send("Invalid username or password");
+            console.log("Invalid username or password");
+            res.send("Invalid username or password");
         }
         else {
             req.session.username = user;
@@ -160,17 +158,17 @@ app.post("/login", function (req, res) {
 
 app.get("/login", function (req, res) {
     //console.log("Invalid username or password");
-    if(req.session.username) {
+    if (req.session.username) {
         var user = req.session.username;
         res.json({user: user});
     }
-    else{
+    else {
         res.redirect("/");
     }
 });
 
 app.get('/:user/todos', function (req, res) {
-    if(req.session.username) {
+    if (req.session.username) {
         var user = req.params.user;
         User.find({username: user}, function (err, result) {
             if (err)
@@ -182,8 +180,7 @@ app.get('/:user/todos', function (req, res) {
         });
     }
 
-    else
-    {
+    else {
         res.redirect('/');
     }
 
@@ -191,7 +188,7 @@ app.get('/:user/todos', function (req, res) {
 
 
 app.post('/:user/todos', function (req, res) {
-    if(req.session.username) {
+    if (req.session.username) {
         var user = req.params.user;
         var text = req.body.text;
         User.find({username: user}, function (err, found) {
@@ -219,15 +216,14 @@ app.post('/:user/todos', function (req, res) {
         });
     }
 
-    else
-    {
+    else {
         res.redirect("/");
     }
 });
 
 
 app.get('/:user/update/:todo_id', function (req, res) {
-    if(req.session.username) {
+    if (req.session.username) {
         var user = req.params.user;
         var todo_id = req.params.todo_id;
         User.find({username: user}, function (err, result) {
@@ -258,15 +254,14 @@ app.get('/:user/update/:todo_id', function (req, res) {
         });
     }
 
-    else
-    {
+    else {
         res.redirect("/");
     }
 });
 
 
 app.get('/:user/delete/:todo_id', function (req, res) {
-    if(req.session.username) {
+    if (req.session.username) {
         var user = req.params.user;
         var todo_id = req.params.todo_id;
         User.find({username: user}, function (err, result) {
@@ -299,13 +294,12 @@ app.get('/:user/delete/:todo_id', function (req, res) {
             }
         });
     }
-    else
-    {
+    else {
         re.redirect("/");
     }
 });
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
     res.sendfile('index.html');
 });
 
