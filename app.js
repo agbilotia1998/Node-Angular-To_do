@@ -105,12 +105,12 @@ app.post("/registered", function (req, res) {
                     });
                 }
                 else {
-                    res.sendfile('index.html', {b: "0"});
+                    res.sendfile('index.html');
                 }
             })
         }
         else {
-            res.sendfile('index.html', {b: "1"});
+            res.sendfile('index.html');
         }
     });
 });
@@ -142,14 +142,16 @@ app.post("/login", function (req, res) {
     //console.log("Invalid username or password");
     var user = req.body.username;
     var pass = req.body.password;
+    console.log(pass);
     User.findOne({username: user, password: pass, confirmation: "1"}, function (err, approved) {
         if (!approved) {
-            res.sendfile("index.html", {a: "1"});
              console.log("Invalid username or password");
         }
         else {
             req.session.username = user;
-            res.sendfile("index.html", {name: approved.name, username: approved.username});
+            console.log("ok");
+            res.json({user:user});
+            //res.redirect('/');
         }
     })
 });
@@ -162,13 +164,6 @@ app.get('/:user/todos', function (req, res) {
             res.send(err);
 
         else {
-            //console.log(result[0].todos[0]);
-            var dataObj = [];
-            for (var i = 0; i < result[0].todos.length; i++) {
-                //console.log(result[0].todos[i]);
-                dataObj.push(result[0].todos[i].task);
-            }
-            //console.log();
             res.json(result[0].todos);
         }
     });
@@ -195,13 +190,6 @@ app.post('/:user/todos', function (req, res) {
                         res.send(err);
 
                     else {
-                        //console.log(result[0].todos[0]);
-                        var dataObj = [];
-                        for (var i = 0; i < result[0].todos.length; i++) {
-                            //console.log(result[0].todos[i]);
-                            dataObj.push(result[0].todos[i].task);
-                        }
-                        //console.log();
                         res.json(result[0].todos);
                     }
                 });
@@ -237,13 +225,6 @@ app.get('/:user/update/:todo_id', function (req, res) {
             res.send(err);
 
         else {
-            //console.log(result[0].todos[0]);
-            var dataObj = [];
-            for (var i = 0; i < result[0].todos.length; i++) {
-                //console.log(result[0].todos[i]);
-                dataObj.push(result[0].todos[i].task);
-            }
-            //console.log();
             res.json(result[0].todos);
         }
     });
@@ -278,12 +259,6 @@ app.get('/:user/delete/:todo_id', function (req, res) {
             res.send(err);
 
         else {
-            //console.log(result[0].todos[0]);
-            var dataObj = [];
-            for (var i = 0; i < result[0].todos.length; i++) {
-                //console.log(result[0].todos[i]);
-                dataObj.push(result[0].todos[i].task);
-            }
             //console.log();
             res.json(result[0].todos);
         }

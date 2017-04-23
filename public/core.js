@@ -31,9 +31,22 @@ function mainController($scope, $http) {
             });
     };
 
+    $scope.login = function() {
+        alert('done');
+        $http.post('/login', $scope.formData)
+            .success(function(data) {
+                $scope.formData = {}; // clear the form so our user is ready to enter another
+                $scope.user = data;
+                console.log(data);
+            })
+            .error(function(data) {
+                console.log('Error: ' + data);
+            });
+    };
+
 
     // delete a todo after checking it
-    $scope.deleteTodo = function(id,user) {
+    $scope.deleteTodo = function(user,id) {
         $http.get(user+'/delete/' + id)
             .success(function(data) {
                 $scope.todos = data;

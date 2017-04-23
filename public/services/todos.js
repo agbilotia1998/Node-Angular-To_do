@@ -7,14 +7,17 @@ angular.module('todoService', [])
 // each function returns a promise object
     .factory('Todos', ['$http',function($http) {
         return {
-            get : function() {
-                return $http.get(user+'/todos');
+            get: function () {
+                return $http.get(user + '/todos');
             },
-            post : function(user,todoData) {
-                return $http.post(user+'/todos', todoData);
+            post: function (user, todoData) {
+                return $http.post(user + '/todos', todoData);
             },
-            get : function(user,id) {
-                return $http.get(user+'/delete/' + id);
+            get: function (user, id) {
+                return $http.get(user + '/delete/' + id);
+            },
+            post: function () {
+                return $http.post('/login');
             }
         }
     }]);
